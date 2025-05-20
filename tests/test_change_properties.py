@@ -12,11 +12,15 @@ def test_create_report():
     time.sleep(5)
 
     print("Нажимаем кнопку 'OK' в начальном окне...")
-    pyautogui.click(x=990, y=595)
-    time.sleep(1)
+    pyautogui.press('enter')
+    time.sleep(2)
 
     print("Создаём новый отчёт...")
     pyautogui.doubleClick(x=1040, y=460)
-    time.sleep(1)
+    time.sleep(2)
 
     print("Тест создания нового отчёта завершён.")
+
+
+
+

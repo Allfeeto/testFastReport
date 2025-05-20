@@ -29,6 +29,7 @@
   },
   "canvas": {
     "text_add_point": [275, 290],
+    "text_add_point_to_edit": [275, 280],
     "insertion_point": [400, 300]
   },
   "text_editor": {
