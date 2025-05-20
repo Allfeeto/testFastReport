@@ -1,0 +1,38 @@
+{
+  "toolbar": {
+    "mouse_button": [11, 170],
+    "text_button": [11, 200],
+    "image_button": [11, 225],
+    "svg_button": [11, 250],
+    "figure_button": [11, 275]
+  },
+  "figure_bar": {
+    "line": [70, 280],
+    "diagonal_line": [70, 300],
+    "diagonal_line_to_right": [70, 320],
+    "diagonal_line_to_left": [70, 340],
+    "diagonal_line_to_left&right": [70, 360],
+    "rectangle": [70, 385],
+    "rounded_rectangle": [70, 405],
+    "ellipse": [70, 430],
+    "triangle": [70, 450],
+    "rhombus": [70, 475],
+    "polyline": [70, 500],
+    "polygon": [70, 520],
+    "pentagon": [70, 540],
+    "hexagon": [70, 560],
+    "heptagon": [70, 585],
+    "octagon": [70, 605]
+  },
+  "ribbon": {
+    "insert": [65, 90]
+  },
+  "canvas": {
+    "text_add_point": [275, 290],
+    "insertion_point": [400, 300]
+  },
+  "text_editor": {
+    "ok_button": [1080, 670],
+    "cansel_button": [1160, 670]
+  }
+}
