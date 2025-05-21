@@ -31,3 +31,7 @@ def find_template_center(template_name: str, confidence=0.9):
 def click_on(template_name: str):
     x, y = find_template_center(template_name)
     pyautogui.click(x, y)
+
+def double_click_on(template_name: str):
+    x, y = find_template_center(template_name)
+    pyautogui.doubleClick(x, y)
