@@ -68,37 +68,82 @@ def test_create_report_and_textbox():
     logger.info(f"Введён текст: {test_text}")
 
     # Нажатие кнопки OK в редакторе текста
-    # pyautogui.click(x=coords["text_editor"]["ok_button"][0], y=coords["text_editor"]["ok_button"][1])
-    pyautogui.hotkey('ctrl', 'enter')  # Самый удобный способ
+    pyautogui.hotkey('ctrl', 'enter')
     time.sleep(1)
 
     # Сохранение скриншота после создания текстового блока
-    after_screenshot = os.path.join("screenshots", "after", f"after_textbox_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
-    take_screenshot(after_screenshot)
-    logger.info(f"Скриншот после создания текстового блока сохранён: {after_screenshot}")
+    after_screenshot_base = os.path.join("screenshots", "after", f"after_textbox_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    take_screenshot(after_screenshot_base)
+    logger.info(f"Скриншот после создания текстового блока сохранён: {after_screenshot_base}")
 
-    # Проверка изменений и соответствия эталонному изображению
+    # Проверка изменений и соответствия эталонному изображению после создания
     try:
-        # Определяем область canvas для проверки (x, y, w, h)
         canvas_region = (
-            coords["canvas"]["text_add_point"][0] - 50,  # x
-            coords["canvas"]["text_add_point"][1] - 50,  # y
-            100,  # ширина
-            100   # высота
+            coords["canvas"]["text_add_point"][0] - 50,
+            coords["canvas"]["text_add_point"][1] - 50,
+            100,
+            100
         )
-        # Проверка изменений в области
-        verify_region_changed((before_screenshot, after_screenshot), canvas_region)
+        verify_region_changed((before_screenshot, after_screenshot_base), canvas_region)
         logger.info("Изменения в области canvas успешно зафиксированы: текстовый блок создан.")
-
-        # Проверка соответствия эталонному изображению
         reference_screenshot = os.path.join("screenshots", "references", "textbox_reference.png")
-        verify_region_matches_reference(after_screenshot, reference_screenshot, canvas_region, threshold=0.95)
+        verify_region_matches_reference(after_screenshot_base, reference_screenshot, canvas_region, threshold=0.95)
         logger.info("Скриншот соответствует эталонному изображению: текстовый блок создан корректно.")
     except AssertionError as e:
-        logger.error(f"Ошибка проверки: {e}")
+        logger.error(f"Ошибка проверки после создания: {e}")
         raise
     except Exception as e:
-        logger.error(f"Неожиданная ошибка при проверке: {e}")
+        logger.error(f"Неожиданная ошибка после создания: {e}")
         raise
 
-    logger.info("Тест создания нового отчёта и текстового блока завершён.")
+    # Изменение размера текстового блока
+    logger.info("Начинаем изменение размера текстового блока...")
+    pyautogui.click(x=353, y=271)
+    time.sleep(0.5)
+
+    # Перетаскивание правее
+    pyautogui.dragTo(x=453, y=271, duration=1)
+    time.sleep(1)
+
+    after_resize_screenshot = os.path.join("screenshots", "after", f"after_resize_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    take_screenshot(after_resize_screenshot)
+    logger.info(f"Скриншот после изменения размера сохранён: {after_resize_screenshot}")
+
+    try:
+        verify_region_changed((after_screenshot_base, after_resize_screenshot), canvas_region)
+        logger.info("Изменения в области canvas успешно зафиксированы: размер блока изменён.")
+
+    except AssertionError as e:
+        logger.error(f"Ошибка проверки после изменения размера: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Неожиданная ошибка после изменения размера: {e}")
+        raise
+
+    # --- Перетаскивание текстового блока ---
+    logger.info("Начинаем перетаскивание текстового блока...")
+    pyautogui.moveTo(x=coords["canvas"]["text_add_point"][0], y=coords["canvas"]["text_add_point"][1]-10)
+    time.sleep(0.5)
+
+    pyautogui.mouseDown()
+    pyautogui.moveRel(150, 0, duration=1)
+    pyautogui.mouseUp()
+    time.sleep(1)
+
+    # Сохранение скриншота
+    after_drag_screenshot = os.path.join("screenshots", "after", f"after_drag_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    take_screenshot(after_drag_screenshot)
+    logger.info(f"Скриншот после перетаскивания сохранён: {after_drag_screenshot}")
+
+    try:
+        verify_region_changed((after_resize_screenshot, after_drag_screenshot), canvas_region)
+        logger.info("Изменения в области canvas успешно зафиксированы: блок перетащен.")
+
+    except AssertionError as e:
+        logger.error(f"Ошибка проверки после перетаскивания: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Неожиданная ошибка после перетаскивания: {e}")
+        raise
+
+    logger.info("Тест создания, изменения размера и перетаскивания текстового блока завершён.")
