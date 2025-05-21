@@ -5,7 +5,7 @@ import os
 def take_screenshot(save_path):
     """Сохраняет скриншот экрана в указанный путь."""
     screenshot = pyautogui.screenshot()
-    screenshot.save(save_path)
+    screenshot.save(save_path) # todo перенести в другой файл
 
 # def compare_images(image_path1, image_path2):
 #     """Сравнивает два изображения и возвращает коэффициент сходства (0-1)."""

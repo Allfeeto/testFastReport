@@ -59,7 +59,7 @@ def input_text(text, use_hotkey=True):
         use_hotkey: Если True, подтверждает через Ctrl+Enter, иначе через кнопку OK.
     """
     logger.info(f"Вводим текст: {text}")
-    if use_hotkey:
+    if use_hotkey: # todo в случае если поле текста не в фокусе - добавить нажатие на него
         pyautogui.hotkey('ctrl', 'enter')
     else:
         double_click_on("new_textbox")
