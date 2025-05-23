@@ -2,7 +2,7 @@ import pyautogui
 import cv2
 import numpy as np
 from pathlib import Path
-
+import pyautogui
 TEMPLATES_DIR = Path("data/templates")
 
 def find_template_center(template_name: str, confidence=0.65):

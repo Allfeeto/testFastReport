@@ -59,18 +59,25 @@ def create_new_report(template_name="null_report"):
     click_on(template_name)
     time.sleep(after_click_delay)
 
-def create_object(object_type, canvas_template="canvas_new"):
+
+def create_object(object_type, canvas_template="canvas_new", x=None, y=None):
     """
-    Создаёт объект (текстовое поле, фигура, изображение) на canvas.
+    Создаёт объект в указанной позиции или по шаблону canvas_template.
 
     Args:
-        object_type: Название кнопки в toolbar ("text_button", "image_button", "figure_button" и т.д.).
-        canvas_template: Шаблон для точки вставки на canvas.
+        object_type: Тип объекта (например, "text_button").
+        canvas_template: Шаблон рабочей области (по умолчанию "canvas_new").
+        x, y: Координаты для клика (если указаны, перекрывают canvas_template).
     """
     after_click_delay = CONFIG.get("delays", {}).get("after_click", 1)
     logger.info(f"Создаём объект типа {object_type}...")
-    click_on(object_type)
-    click_on(canvas_template)
+    click_on(object_type)  # Выбираем тип объекта (например, кнопку текстового блока)
+    if x is not None and y is not None:
+        logger.info(f"Кликаем в координаты ({x}, {y}) для размещения объекта...")
+        pyautogui.click(x=x, y=y)
+    else:
+        logger.info(f"Кликаем по шаблону {canvas_template} для размещения объекта...")
+        click_on(canvas_template)
     time.sleep(after_click_delay)
 
 def input_text(text, use_hotkey=True):
@@ -164,3 +171,49 @@ def take_screenshot_with_timestamp(folder="after"):
     take_screenshot(screenshot_path)
     logger.info(f"Скриншот сохранён: {screenshot_path}")
     return screenshot_path
+
+def change_z_order(template_name="new_textbox", action="bring_to_front"):
+    """
+    Изменяет Z-порядок объекта (вынос на передний или задний план) с использованием поиска по скриншотам.
+    """
+    after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
+
+    # 1) Находим объект по шаблону
+    logger.info(f"Ищем объект '{template_name}' для изменения Z-порядка...")
+    try:
+        x_obj, y_obj = find_template_center(template_name, confidence=0.7)
+        logger.info(f"Объект '{template_name}' найден на ({x_obj}, {y_obj})")
+    except ValueError as e:
+        logger.error(f"Не удалось найти объект '{template_name}': {e}")
+        raise
+
+    # 2) Открываем контекстное меню через правый клик по центру объекта
+    pyautogui.moveTo(x_obj, y_obj)
+    pyautogui.rightClick()
+    time.sleep(after_action_delay * 2)  # ждем появления меню
+
+    # 3) Определяем, какой пункт меню искать
+    if action == "foreground":
+        menu_template = "foreground"
+        log_action = "Вынос на передний план"
+    elif action == "background":
+        menu_template = "background"
+        log_action = "Вынос на задний план"
+    else:
+        logger.error(f"Неверное действие для Z-порядка: {action}")
+        raise ValueError("Допустимые значения action: 'foreground' или 'background'")
+
+    logger.info(f"Ищем пункт меню '{menu_template}' ({log_action})...")
+    try:
+        x_menu, y_menu = find_template_center(menu_template, confidence=0.7)
+        logger.info(f"Пункт меню '{menu_template}' найден на ({x_menu}, {y_menu})")
+        pyautogui.click(x=x_menu, y=y_menu)
+        time.sleep(after_action_delay)
+        logger.info(f"Действие '{log_action}' выполнено для объекта '{template_name}'")
+    except ValueError as e:
+        logger.error(f"Не удалось найти пункт меню '{menu_template}': {e}")
+        debug_screenshot = take_screenshot_with_timestamp("debug_z_order_error")
+        logger.info(f"Скриншот для отладки сохранён: {debug_screenshot}")
+        raise
+
+    logger.info(f"Z-порядок изменён на '{action}' для объекта '{template_name}'")
