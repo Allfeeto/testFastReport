@@ -79,10 +79,10 @@ def test_create_report_and_textbox():
         raise
 
 
-    moveTo(656, 261, duration=1) #todo это костыль - надо будет реализовать иначе все что ниже
+
 
     # Изменение размера текстового блока
-    resize_object(x_start=656, y_start=261, x_end=710, y_end=200)
+    resize_object(template_name="test_text_123", handle_template="resize_handle", offset_x=50, offset_y=-50)
     after_resize_screenshot = take_screenshot_with_timestamp("after")
 
     try:
@@ -97,7 +97,7 @@ def test_create_report_and_textbox():
         raise
 
     # Перетаскивание текстового блока
-    drag_object(x_start=textbox_center[0], y_start=textbox_center[1], x_offset=150, y_offset=0)
+    drag_object(template_name="test_text_123", offset_x=150, offset_y=0)
     after_drag_screenshot = take_screenshot_with_timestamp("after")
 
     try:

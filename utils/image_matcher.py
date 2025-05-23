@@ -5,7 +5,7 @@ from pathlib import Path
 
 TEMPLATES_DIR = Path("data/templates")
 
-def find_template_center(template_name: str, confidence=0.9):
+def find_template_center(template_name: str, confidence=0.65):
     """
     Ищет шаблон на экране и возвращает координаты центра совпадения.
     """
