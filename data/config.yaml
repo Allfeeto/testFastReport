@@ -1,2 +1,13 @@
-base_resolution: [1920, 1080]
-base_scale: 1.0
+app_path: "C:\\Program Files (x86)\\Fast Reports\\.NET\\2025.2.3\\FastReport .NET WinForms Pack Trial\\Designer.exe"
+delays:
+  app_launch: 5  # Задержка после запуска приложения
+  after_click: 1  # Задержка после клика
+  after_double_click: 1  # Задержка после двойного клика
+  after_text_input: 0  # Задержка после ввода текста
+  after_resize: 1  # Задержка после изменения размера
+  after_drag: 1  # Задержка после перетаскивания
+  after_action: 0.5  # Задержка после общего действия (например, клика мышью)
+pyautogui:
+  pause: 0.5  # Пауза между действиями PyAutoGUI
+  failsafe: true  # Включение failsafe режима
+test_text: "Test Text Тест Текст 123" # Тестовый текст для ввода (программа вводит тот текст, язык которого совпадает с языком Windows)

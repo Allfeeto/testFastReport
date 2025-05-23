@@ -1,5 +1,6 @@
 import os
 
+import yaml
 from pyautogui import moveTo
 
 from utils.actions import (
@@ -19,6 +20,9 @@ from utils.verifications import verify_region_changed, verify_region_matches_ref
 # Настройка логгера
 logger = setup_logger(log_file=os.path.join("logs", "ui_test.log"))
 
+# Загрузка конфигурации
+CONFIG = yaml.safe_load(open("data/config.yaml", encoding="utf-8"))
+
 def test_create_report_and_textbox():
     # Настройка PyAutoGUI
     setup_pyautogui()
@@ -28,6 +32,7 @@ def test_create_report_and_textbox():
     os.makedirs("screenshots/after", exist_ok=True)
 
     logger.info("Запуск теста создания отчёта и текстового блока...")
+    test_text = CONFIG.get("test_text", "Test Text Тест Текст 123")
 
     # Открытие приложения и создание нового отчёта
     open_fastreport()
@@ -39,7 +44,7 @@ def test_create_report_and_textbox():
     # Создание текстового блока и ввод текста
     create_object("text_button", "canvas_new")
     textbox_center = find_template_center("new_textbox")
-    input_text("Test Text")
+    input_text(test_text)
 
     # Сохранение скриншота после создания текстового блока
     after_screenshot_base = take_screenshot_with_timestamp("after")
