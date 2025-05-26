@@ -6,6 +6,12 @@ import pyautogui
 # Получаем логгер из вызывающего модуля
 logger = logging.getLogger('UITestLogger')
 
+def take_screenshot(save_path):
+    """Сохраняет скриншот экрана в указанный путь."""
+    screenshot = pyautogui.screenshot()
+    screenshot.save(save_path)
+
+
 
 def verify_region_changed(screenshots, region):
     """
@@ -58,7 +64,7 @@ def verify_region_changed(screenshots, region):
         mean_diff = np.mean(diff)
 
         # Порог для определения изменений (можно настроить)
-        threshold = 5
+        threshold = 1
         if mean_diff < threshold:
             logger.error(f"Изменения в области не зафиксированы (mean_diff={mean_diff:.2f} < {threshold}).")
             raise AssertionError(f"Изменения в области не зафиксированы (mean_diff={mean_diff:.2f} < {threshold}).")

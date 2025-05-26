@@ -5,8 +5,9 @@ from datetime import datetime
 import yaml
 from utils.logger import setup_logger
 from utils.image_matcher import click_on, double_click_on, find_template_center
-from utils.images import take_screenshot
 import subprocess
+
+from utils.verifications import take_screenshot
 
 # Настройка логгера
 logger = setup_logger(log_file=os.path.join("logs", "ui_test.log"))
@@ -110,12 +111,11 @@ def input_text(text, use_hotkey=True):
         click_on("text_editor_ok_button")
     time.sleep(after_text_input_delay)
 
-def resize_object(template_name="new_textbox", handle_template="resize_handle", offset_x=50, offset_y=50, duration=1):
+def resize_object(handle_template="resize_handle_right_top", offset_x=50, offset_y=50, duration=1):
     """
     Изменяет размер объекта, находя угловой квадратик через шаблон.
 
     Args:
-        template_name: Шаблон объекта для определения начальной позиции.
         handle_template: Шаблон углового квадратика для изменения размера.
         offset_x, offset_y: Смещение для конечной точки перетаскивания (в пикселях).
         duration: Длительность перетаскивания в секундах.
@@ -123,8 +123,6 @@ def resize_object(template_name="new_textbox", handle_template="resize_handle", 
     after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
     after_resize_delay = CONFIG.get("delays", {}).get("after_resize", 1)
 
-    logger.info(f"Ищем объект '{template_name}' для изменения размера...")
-    x_start, y_start = find_template_center(template_name)
     logger.info(f"Ищем угловой квадратик '{handle_template}'...")
     x_handle, y_handle = find_template_center(handle_template)
 
@@ -134,28 +132,37 @@ def resize_object(template_name="new_textbox", handle_template="resize_handle", 
     pyautogui.dragRel(offset_x, offset_y, duration=duration)
     time.sleep(after_resize_delay)
 
-def drag_object(template_name="new_textbox", offset_x=150, offset_y=0, duration=1):
+def drag_object(handle_template="resize_handle_right_top", offset_x=150, offset_y=0, duration=1):
     """
-    Перетаскивает объект, находя его через шаблон.
+    Перетаскивает объект, определяя его положение через координаты resize-ручки и смещение вверх/влево.
 
     Args:
-        template_name: Шаблон объекта для перетаскивания.
+        handle_template: Шаблон resize-ручки (обычно правый нижний угол).
         offset_x, offset_y: Смещение для перетаскивания (в пикселях).
         duration: Длительность перетаскивания в секундах.
     """
     after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
     after_drag_delay = CONFIG.get("delays", {}).get("after_drag", 1)
 
-    logger.info(f"Ищем объект '{template_name}' для перетаскивания...")
-    x_start, y_start = find_template_center(template_name)
+    # Смещение от resize-ручки до "тела" объекта
+    object_offset_x = -10  # сместиться влево от правого нижнего угла
+    object_offset_y = 10  # сместиться вверх от правого нижнего угла
 
-    logger.info(f"Перетаскиваем объект: с ({x_start}, {y_start}) на смещение ({offset_x}, {offset_y})...")
+    logger.info(f"Ищем resize-ручку '{handle_template}' для вычисления положения объекта...")
+    x_handle, y_handle = find_template_center(handle_template)
+
+    # Получаем примерную точку в теле объекта
+    x_start = x_handle + object_offset_x
+    y_start = y_handle + object_offset_y
+
+    logger.info(f"Перетаскиваем объект: от координат ({x_start}, {y_start}) со смещением ({offset_x}, {offset_y})...")
     pyautogui.moveTo(x=x_start, y=y_start)
     time.sleep(after_action_delay)
     pyautogui.mouseDown()
     pyautogui.moveRel(offset_x, offset_y, duration=duration)
     pyautogui.mouseUp()
     time.sleep(after_drag_delay)
+
 
 def take_screenshot_with_timestamp(folder="after"):
     """
