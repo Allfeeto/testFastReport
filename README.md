@@ -109,7 +109,7 @@ testFastReport/
 
    - Не забудьте зайти в [конфигурационный файл](https://github.com/Allfeeto/testFastReport/blob/main/data/config.yaml) и выставить необходимые переменные под себя;
    - Некоторые тесты используют буфер - Вам нужно при запуске теста иметь в буфере нужный текст или картинку;
-   - Тесты, пишущие текст сильно зависят от языка системы, выбранного на момент запуска теста, так что если тест вводит английский язык - переключитесь на него в системе.
-   - В [конфиге](https://github.com/Allfeeto/testFastReport/blob/main/data/config.yaml) можно поменять тестовый текст для ввода. Однако эталонные изображения сделаны под текст "Test text 123", поэтому в случае изменений надо будет поменять эталонные изображения в [screenshots/references/](https://github.com/Allfeeto/testFastReport/tree/main/screenshots/references)
+   - Тесты, пишущие текст сильно зависят от языка системы, выбранного на момент запуска теста, так что если тест вводит английский язык - переключитесь на него в системе;
+   - В [конфиге](https://github.com/Allfeeto/testFastReport/blob/main/data/config.yaml) можно поменять тестовый текст для ввода. Однако эталонные изображения сделаны под текст "Test text 123", поэтому в случае изменений надо будет поменять эталонные изображения в [screenshots/references/](https://github.com/Allfeeto/testFastReport/tree/main/screenshots/references).
   
   
