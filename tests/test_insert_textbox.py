@@ -21,10 +21,10 @@ def test_create_report_and_textbox(logger, config, canvas_region, actions, verif
 
     # Создание текстового блока и ввод текста
     actions.create_object("text_button", "canvas_new")
-    # Находим координаты текстового блока
-    center_x, center_y = image_matcher.find_template_center("new_textbox")
-    # Задаём меньшую область вокруг текстового блока (например, 200x100 пикселей)
-    text_region = (center_x - 70, center_y - 20, 200, 100)
+    # Находим координаты текстового блока по квадратику
+    center_x, center_y = image_matcher.find_template_center("resize_handle_left_top")
+    # Задаём область текста
+    text_region = (center_x, center_y, 90, 16)
     actions.input_text(test_text)
 
 
@@ -44,12 +44,16 @@ def test_create_report_and_textbox(logger, config, canvas_region, actions, verif
     )
 
     # Изменение размера текстового блока
-    actions.resize_object(handle_template="resize_handle_right_top", offset_x=50, offset_y=-80)
+    actions.resize_object(handle_template="resize_handle_right_bottom", offset_x=50, offset_y=-80)
+    # Находим координаты текстового блока по квадратику
+    center_x, center_y = image_matcher.find_template_center("resize_handle_left_top")
+    # Задаём область текста
+    text_region = (center_x, center_y, 90, 16)
     after_resize_screenshot = actions.take_screenshot_with_timestamp("after")
     verifications.check_region_changed(
         after_screenshot_base,
         after_resize_screenshot,
-        canvas_region,
+        text_region,
         "Изменения в области canvas успешно зафиксированы: размер блока изменён.",
         "Ошибка проверки после изменения размера: "
     )
@@ -57,18 +61,22 @@ def test_create_report_and_textbox(logger, config, canvas_region, actions, verif
     # Перетаскивание текстового блока
     logger.info("Перетаскиваем первый текстовый блок...")
     actions.drag_object(handle_template="resize_handle_right_top", offset_x=150, offset_y=70)
+    # Находим координаты текстового блока по квадратику
+    center_x, center_y = image_matcher.find_template_center("resize_handle_left_top")
+    # Задаём область текста
+    text_region = (center_x, center_y, 90, 16)
     after_drag_screenshot = actions.take_screenshot_with_timestamp("after")
     verifications.check_region_changed(
         after_resize_screenshot,
         after_drag_screenshot,
-        canvas_region,
+        text_region,
         "Изменения в области canvas успешно зафиксированы: блок перетащен.",
         "Ошибка проверки после перетаскивания: "
     )
     verifications.check_region_matches_reference(
         after_drag_screenshot,
         actions.get_path("screenshots", "references", "textbox_full_reference.png"),
-        canvas_region,
+        text_region,
         threshold=0.95,
         success_msg="Скриншот соответствует эталонному изображению: текстовый блок увеличен и перемещён корректно."
     )

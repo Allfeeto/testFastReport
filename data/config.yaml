@@ -11,4 +11,4 @@ pyautogui:
   pause: 0.5  # Пауза между действиями PyAutoGUI
   failsafe: true  # Включение failsafe режима
 test_text: "Test Text 123" # Тестовый текст для ввода (программа вводит тот текст, язык которого совпадает с языком Windows)
-canvas_region: [220, 180, 720, 400] # Регион канваса
+canvas_region: [220, 180, 720, 500] # Регион канваса
