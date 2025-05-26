@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import logging
 import pyautogui
+
 # Получаем логгер из вызывающего модуля
 logger = logging.getLogger('UITestLogger')
 
@@ -11,16 +12,14 @@ def take_screenshot(save_path):
     screenshot = pyautogui.screenshot()
     screenshot.save(save_path)
 
-
-
-def verify_region_changed(screenshots, region):
+def verify_region_changed(screenshots, region, threshold = 0.01):
     """
     Проверяет, что в указанной области между двумя скриншотами произошли изменения.
 
     Args:
         screenshots: Кортеж (before_path, after_path) с путями к скриншотам.
         region: Кортеж (x, y, w, h) с координатами и размером области для сравнения.
-
+        threshold: минимальное значение сходства.
     Raises:
         AssertionError: Если изменения в области не зафиксированы.
         FileNotFoundError: Если один из скриншотов не найден.
@@ -64,7 +63,6 @@ def verify_region_changed(screenshots, region):
         mean_diff = np.mean(diff)
 
         # Порог для определения изменений (можно настроить)
-        threshold = 1
         if mean_diff < threshold:
             logger.error(f"Изменения в области не зафиксированы (mean_diff={mean_diff:.2f} < {threshold}).")
             raise AssertionError(f"Изменения в области не зафиксированы (mean_diff={mean_diff:.2f} < {threshold}).")
@@ -74,7 +72,6 @@ def verify_region_changed(screenshots, region):
     except Exception as e:
         logger.error(f"Ошибка при сравнении изображений: {e}")
         raise
-
 
 def verify_region_matches_reference(screenshot_path, reference_path, region, threshold=0.95):
     """
@@ -141,4 +138,59 @@ def verify_region_matches_reference(screenshot_path, reference_path, region, thr
 
     except Exception as e:
         logger.error(f"Ошибка при сравнении с эталонным изображением: {e}")
+        raise
+
+def check_region_changed(before_screenshot, after_screenshot, region, success_msg, error_msg_prefix="Ошибка проверки после "):
+    """
+    Проверяет изменения в области между скриншотами с обработкой исключений.
+
+    Args:
+        before_screenshot: Путь к скриншоту "до".
+        after_screenshot: Путь к скриншоту "после".
+        region: Кортеж (x, y, w, h) с координатами и размером области.
+        success_msg: Сообщение об успехе для лога.
+        error_msg_prefix: Префикс для сообщений об ошибках.
+
+    Raises:
+        Передаёт исключения из verify_region_changed с соответствующим сообщением.
+    """
+    try:
+        verify_region_changed((before_screenshot, after_screenshot), region)
+        logger.info(success_msg)
+    except AssertionError as e:
+        logger.error(f"{error_msg_prefix}изменения: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"{error_msg_prefix}непредвиденной ошибки: {e}")
+        raise
+
+def check_region_matches_reference(screenshot_path, reference_path, region, threshold=0.95, success_msg="Скриншот соответствует эталонному изображению.", error_msg_prefix="Ошибка проверки соответствия эталону после "):
+    """
+    Проверяет соответствие области эталонному изображению с обработкой исключений.
+
+    Args:
+        screenshot_path: Путь к скриншоту "после" действия.
+        reference_path: Путь к эталонному изображению.
+        region: Кортеж (x, y, w, h) с координатами и размером области.
+        threshold: Порог сходства (0-1), по умолчанию 0.95.
+        success_msg: Сообщение об успехе для лога.
+        error_msg_prefix: Префикс для сообщений об ошибках.
+
+    Raises:
+        Передаёт исключения из verify_region_matches_reference с соответствующим сообщением.
+    """
+    try:
+        verify_region_matches_reference(screenshot_path, reference_path, region, threshold)
+        logger.info(success_msg)
+    except AssertionError as e:
+        logger.error(f"{error_msg_prefix}создания: {e}")
+        raise
+    except FileNotFoundError as e:
+        logger.error(f"{error_msg_prefix}шаблона: {e}")
+        raise
+    except ValueError as e:
+        logger.error(f"{error_msg_prefix}поиска шаблона: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"{error_msg_prefix}непредвиденной ошибки: {e}")
         raise
