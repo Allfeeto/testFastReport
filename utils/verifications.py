@@ -75,11 +75,12 @@ def verify_region_changed(screenshots, region, threshold = 0.01):
 
 def verify_region_matches_reference(screenshot_path, reference_path, region, threshold=0.95):
     """
-    Проверяет, что область на скриншоте соответствует области того же размера на эталонном изображении.
+    Проверяет, что область на скриншоте соответствует области того же размера на эталонном изображении,
+    с бинаризацией для повышения чувствительности к тексту.
 
     Args:
         screenshot_path: Путь к скриншоту "после" действия.
-        reference_path: Путь к эталонному изображению (может быть целым скриншотом).
+        reference_path: Путь к эталонному изображению.
         region: Кортеж (x, y, w, h) с координатами и размером области для сравнения.
         threshold: Порог сходства (0-1), по умолчанию 0.95.
 
@@ -111,7 +112,7 @@ def verify_region_matches_reference(screenshot_path, reference_path, region, thr
             logger.error(f"Некорректная область для сравнения: {region}")
             raise ValueError(f"Некорректная область для сравнения: {region}")
 
-        # Вырезаем области интереса (ROI) из обоих изображений
+        # Вырезаем области интереса (ROI) и преобразуем в серые тона
         roi = img[y:y + h, x:x + w]
         ref_roi = ref_img[y:y + h, x:x + w]
 
@@ -120,13 +121,19 @@ def verify_region_matches_reference(screenshot_path, reference_path, region, thr
             logger.error("Размеры областей интереса не совпадают.")
             raise ValueError("Размеры областей интереса не совпадают.")
 
-        # Вычисляем разницу между областями
-        diff = cv2.absdiff(roi, ref_roi)
+        # Бинаризация для выделения текста
+        _, roi_binary = cv2.threshold(cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY), 128, 255, cv2.THRESH_BINARY)
+        _, ref_binary = cv2.threshold(cv2.cvtColor(ref_roi, cv2.COLOR_BGR2GRAY), 128, 255, cv2.THRESH_BINARY)
+
+        # Вычисляем разницу между бинаризованными изображениями
+        diff = cv2.absdiff(roi_binary, ref_binary)
         mean_diff = np.mean(diff)
 
-        # Вычисляем коэффициент сходства (1 - нормированная разница)
-        max_diff = 255 * 3
+        # Вычисляем коэффициент сходства
+        max_diff = 255
         similarity = 1 - (mean_diff / max_diff)
+
+        logger.debug(f"Средняя разница (mean_diff): {mean_diff}, Схожесть (similarity): {similarity}")
 
         if similarity < threshold:
             logger.error(
