@@ -1,6 +1,7 @@
 import os
 import yaml
 import pytest
+import pyautogui
 
 from utils.actions import (
     setup_pyautogui,
@@ -10,7 +11,9 @@ from utils.actions import (
     input_text,
     resize_object,
     drag_object,
-    take_screenshot_with_timestamp, change_z_order
+    take_screenshot_with_timestamp,
+    change_z_order,
+    context_menu_action
 )
 from utils.logger import setup_logger
 from utils.image_matcher import find_template_center, click_on, double_click_on
@@ -20,6 +23,7 @@ from utils.verifications import verify_region_changed, verify_region_matches_ref
 class Actions:
     def __init__(self, os_module):
         self.os = os_module
+        self.pyautogui = pyautogui
         self.open_fastreport = open_fastreport
         self.create_new_report = create_new_report
         self.create_object = create_object
@@ -28,6 +32,7 @@ class Actions:
         self.drag_object = drag_object
         self.take_screenshot_with_timestamp = take_screenshot_with_timestamp
         self.change_z_order = change_z_order
+        self.context_menu_action = context_menu_action
 
     def get_path(self, *args):
         """Формирует путь с использованием os.path.join."""

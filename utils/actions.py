@@ -224,3 +224,77 @@ def change_z_order(template_name="new_textbox", action="bring_to_front"):
         raise
 
     logger.info(f"Z-порядок изменён на '{action}' для объекта '{template_name}'")
+
+def context_menu_action(template_name="new_textbox", action="copy"):
+    """
+    Выполняет действие через контекстное меню для указанного объекта.
+
+    Args:
+        template_name: Шаблон объекта (например, "new_textbox").
+        action: Действие для выполнения ("copy", "paste", "cut", "edit", "clear", "delete").
+
+    Raises:
+        ValueError: Если объект или пункт меню не найден, или указано неверное действие.
+    """
+    after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
+
+    # 1) Находим объект по шаблону
+    logger.info(f"Ищем объект '{template_name}' для действия '{action}'...")
+    try:
+        x_obj, y_obj = find_template_center(template_name, confidence=0.7)
+        logger.info(f"Объект '{template_name}' найден на ({x_obj}, {y_obj})")
+    except ValueError as e:
+        logger.error(f"Не удалось найти объект '{template_name}': {e}")
+        raise
+
+    # 2) Открываем контекстное меню через правый клик
+    pyautogui.moveTo(x_obj, y_obj)
+    pyautogui.rightClick()
+    time.sleep(after_action_delay * 2)  # Ждём появления меню
+
+    # 3) Определяем шаблон для пункта меню
+    menu_templates = {
+        "copy": "copy_menu",
+        "paste": "paste_menu",
+        "cut": "cut_menu",
+        "edit": "edit_menu",
+        "clear": "clear_menu",
+        "delete": "delete_menu"
+    }
+    if action not in menu_templates:
+        logger.error(f"Неверное действие для контекстного меню: {action}")
+        raise ValueError(f"Допустимые действия: {', '.join(menu_templates.keys())}")
+
+    menu_template = menu_templates[action]
+    log_action = action.capitalize()
+
+    # 4) Кликаем по пункту меню
+    logger.info(f"Ищем пункт меню '{menu_template}' ({log_action})...")
+    try:
+        x_menu, y_menu = find_template_center(menu_template, confidence=0.7)
+        logger.info(f"Пункт меню '{menu_template}' найден на ({x_menu}, {y_menu})")
+        pyautogui.click(x=x_menu, y=y_menu)
+        time.sleep(after_action_delay)
+        logger.info(f"Действие '{log_action}' выполнено для объекта '{template_name}'")
+    except ValueError as e:
+        logger.error(f"Не удалось найти пункт меню '{menu_template}': {e}")
+        debug_screenshot = take_screenshot_with_timestamp(f"debug_{action}_error")
+        logger.info(f"Скриншот для отладки сохранён: {debug_screenshot}")
+        raise
+
+    # 5) Дополнительные действия для редактирования или очищения
+    if action == "edit":
+        logger.info("Ожидаем открытия редактора для ввода текста...")
+        time.sleep(after_action_delay)
+        pyautogui.write("Edited Text", interval=0.1)
+        pyautogui.hotkey('ctrl', 'enter')
+        time.sleep(after_action_delay)
+    elif action == "clear":
+        logger.info("Ожидаем открытия редактора для очищения текста...")
+        time.sleep(after_action_delay)
+        pyautogui.hotkey('ctrl', 'a')
+        pyautogui.press('delete')
+        pyautogui.hotkey('ctrl', 'enter')
+        time.sleep(after_action_delay)
+
+    logger.info(f"Действие '{action}' через контекстное меню выполнено для объекта '{template_name}'")
