@@ -155,6 +155,7 @@ testFastReport/
 **Скриншоты:**
 - `screenshots/before/`: до действия
 - `screenshots/after/`: после действия
+- `screenshots/references/`: эталонные для проверки результатов
 
 ---
 
