@@ -60,6 +60,37 @@ def create_new_report(template_name="null_report"):
     click_on(template_name)
     time.sleep(after_click_delay)
 
+def close_fastreport():
+    """Закрывает приложение FastReport с обработкой окна подтверждения сохранения."""
+    close_delay = CONFIG.get("delays", {}).get("close_delay", 2)
+    confirmation_delay = CONFIG.get("delays", {}).get("confirmation_delay", 1)
+    after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
+
+    logger.info("Закрываем FastReport...")
+
+    # Нажатие Alt+F4 для закрытия основного окна
+    try:
+        pyautogui.hotkey('alt', 'f4')
+        time.sleep(confirmation_delay)  # Ждём появления окна подтверждения
+    except Exception as e:
+        logger.error(f"Ошибка при закрытии окна через Alt+F4: {e}")
+        raise
+
+    # Обработка окна подтверждения (выбор "Нет" и Enter)
+    try:
+        logger.info("Обрабатываем окно подтверждения сохранения...")
+        pyautogui.press('right')  # Перемещаем фокус на "Нет"
+        time.sleep(0.5)  # Короткая задержка для стабильности
+        pyautogui.press('enter')  # Подтверждаем выбор "Нет"
+        time.sleep(close_delay)  # Ждём полного закрытия приложения
+    except Exception as e:
+        logger.error(f"Ошибка при обработке окна подтверждения: {e}")
+        raise
+
+    logger.info("FastReport успешно закрыт.")
+    time.sleep(after_action_delay)
+
+
 
 def create_object(object_type, canvas_template="canvas_new", x=None, y=None):
     """

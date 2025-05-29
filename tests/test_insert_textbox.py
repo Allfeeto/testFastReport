@@ -81,4 +81,7 @@ def test_create_report_and_textbox(logger, config, canvas_region, actions, verif
         success_msg="Скриншот соответствует эталонному изображению: текстовый блок увеличен и перемещён корректно."
     )
 
+    # Закрытие приложения
+    actions.close_fastreport()
+
     logger.info("Тест создания, изменения размера и перетаскивания текстового блока завершён.")
