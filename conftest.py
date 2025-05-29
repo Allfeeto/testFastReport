@@ -14,7 +14,8 @@ from utils.actions import (
     take_screenshot_with_timestamp,
     change_z_order,
     context_menu_action,
-    close_fastreport
+    close_fastreport,
+    fill_object
 )
 from utils.logger import setup_logger
 from utils.image_matcher import find_template_center, click_on, double_click_on
@@ -35,6 +36,7 @@ class Actions:
         self.change_z_order = change_z_order
         self.context_menu_action = context_menu_action
         self.close_fastreport = close_fastreport
+        self.fill_object = fill_object
 
     def get_path(self, *args):
         """Формирует путь с использованием os.path.join."""

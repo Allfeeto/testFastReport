@@ -194,6 +194,36 @@ def drag_object(handle_template="resize_handle_right_top", offset_x=150, offset_
     pyautogui.mouseUp()
     time.sleep(after_drag_delay)
 
+def fill_object(template_name="color_textbox", fill_button_template="fill_color_button", color_template="color_red"):
+    """
+    Заливает объект цветом через кнопку заливки и выбор цвета.
+
+    Args:
+        template_name: Шаблон объекта для выбора.
+        fill_button_template: Шаблон кнопки заливки.
+        color_template: Шаблон цвета в выпадающем списке.
+    """
+    after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
+
+    # 1) Выбираем объект
+    logger.info(f"Ищем объект '{template_name}' для заливки...")
+    x_obj, y_obj = find_template_center(template_name)
+    pyautogui.click(x=x_obj, y=y_obj)
+    time.sleep(after_action_delay)
+
+    # 2) Находим кнопку заливки и кликаем правее центра
+    logger.info(f"Ищем кнопку заливки '{fill_button_template}'...")
+    x_fill, y_fill = find_template_center(fill_button_template)
+    pyautogui.click(x=x_fill + 20, y=y_fill)  # Клик правее для выпадающего списка
+    time.sleep(after_action_delay * 2)  # Ждём появления списка
+
+    # 3) Выбираем цвет
+    logger.info(f"Ищем цвет '{color_template}' в выпадающем списке...")
+    x_color, y_color = find_template_center(color_template)
+    pyautogui.click(x=x_color, y=y_color)
+    time.sleep(after_action_delay)
+
+    logger.info(f"Объект '{template_name}' залит цветом '{color_template}'")
 
 def take_screenshot_with_timestamp(folder="after"):
     """
@@ -226,7 +256,8 @@ def change_z_order(template_name="new_textbox", action="bring_to_front"):
         raise
 
     # 2) Открываем контекстное меню через правый клик по центру объекта
-    pyautogui.moveTo(x_obj, y_obj)
+    offset_x = 20
+    pyautogui.moveTo(x_obj + offset_x, y_obj)
     pyautogui.rightClick()
     time.sleep(after_action_delay * 2)  # ждем появления меню
 
@@ -317,15 +348,13 @@ def context_menu_action(template_name="new_textbox", action="copy"):
     if action == "edit":
         logger.info("Ожидаем открытия редактора для ввода текста...")
         time.sleep(after_action_delay)
+        pyautogui.hotkey('ctrl', 'a')
         pyautogui.write("Edited Text", interval=0.1)
         pyautogui.hotkey('ctrl', 'enter')
         time.sleep(after_action_delay)
     elif action == "clear":
         logger.info("Ожидаем открытия редактора для очищения текста...")
         time.sleep(after_action_delay)
-        pyautogui.hotkey('ctrl', 'a')
-        pyautogui.press('delete')
-        pyautogui.hotkey('ctrl', 'enter')
         time.sleep(after_action_delay)
 
     logger.info(f"Действие '{action}' через контекстное меню выполнено для объекта '{template_name}'")
