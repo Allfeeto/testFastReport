@@ -2,14 +2,14 @@ app_path: "C:\\Program Files (x86)\\Fast Reports\\.NET\\2025.2.3\\FastReport .NE
 app_demo_version: True # Поменяйте значение на True, чтобы запустить демо-версию приложения и наоборот False для полной версии
 delays:
   app_launch: 6  # Задержка после запуска приложения
-  after_click: 0  # Задержка после клика
-  after_double_click: 0  # Задержка после двойного клика
-  after_text_input: 0  # Задержка после ввода текста
-  after_resize: 0  # Задержка после изменения размера
-  after_drag: 0  # Задержка после перетаскивания
+  after_click: 0.5  # Задержка после клика
+  after_double_click: 0.5  # Задержка после двойного клика
+  after_text_input: 0.5  # Задержка после ввода текста
+  after_resize: 0.5  # Задержка после изменения размера
+  after_drag: 0.5  # Задержка после перетаскивания
   close_delay: 2
   confirmation_delay: 1
-  after_action: 0  # Задержка после общего действия (например, клика мышью)
+  after_action: 0.5  # Задержка после общего действия (например, клика мышью)
 pyautogui:
   pause: 0.5  # Пауза между действиями PyAutoGUI
   failsafe: true  # Включение failsafe режима

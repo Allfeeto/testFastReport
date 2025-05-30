@@ -177,7 +177,7 @@ def test_object_functions(logger, config, canvas_region, actions, verifications,
     # 11. Вставка вырезанного блока через контекстное меню
     logger.info("Вставка вырезанного текстового блока через контекстное меню...")
     actions.context_menu_action("test_text123", action="paste")
-    actions.pyautogui.click(x=center_x - 100, y=center_y)  # Клик левее первого блока, на той же высоте
+    actions.pyautogui.click(x=center_x + 50, y=center_y)  # Клик левее первого блока, на той же высоте
     actions.pyautogui.sleep(after_action_delay)
     after_paste2_menu_screenshot = actions.take_screenshot_with_timestamp("after")
     verifications.check_region_changed(
@@ -212,9 +212,79 @@ def test_object_functions(logger, config, canvas_region, actions, verifications,
         "Ошибка проверки после очищения (контекстное меню): "
     )
 
-    # 14. Удаление через контекстное меню
+    # 12. Заливка объекта
+    logger.info("Заливка текстового блока...")
+    try:
+        actions.fill_object("color_textbox", "fill_color_button", "color_red")
+    except ValueError as e:
+        logger.error(f"Ошибка при заливке: {e}")
+        debug_screenshot = actions.take_screenshot_with_timestamp("debug_fill_error")
+        raise
+    after_fill_screenshot = actions.take_screenshot_with_timestamp("after")
+    verifications.check_region_changed(
+        after_paste2_menu_screenshot,
+        after_fill_screenshot,
+        text_region,
+        "Изменения в области canvas успешно зафиксированы: текстовый блок залит.",
+        "Ошибка проверки после заливки: "
+    )
+
+    # 13. Перетаскивание объекта
+    logger.info("Перетаскивание текстового блока на исходную позицию...")
+    try:
+        actions.drag_object("red_textbox", offset_x=-100)
+    except ValueError as e:
+        logger.error(f"Ошибка при перетаскивании: {e}")
+        debug_screenshot = actions.take_screenshot_with_timestamp("debug_drag_error")
+        raise
+    after_drag_screenshot = actions.take_screenshot_with_timestamp("after")
+    verifications.check_region_changed(
+        after_fill_screenshot,
+        after_drag_screenshot,
+        canvas_region,
+        "Изменения в области canvas успешно зафиксированы: текстовый блок перетащен.",
+        "Ошибка проверки после перетаскивания: "
+    )
+
+    # 14. Вынос на задний план через контекстное меню
+    logger.info("Вынос текстового блока на задний план через контекстное меню...")
+    try:
+        actions.change_z_order("red_textbox",
+                               action="background")  # Используем red_textbox, предполагая, что это залитый блок
+    except ValueError as e:
+        logger.error(f"Ошибка при выносе на задний план: {e}")
+        debug_screenshot = actions.take_screenshot_with_timestamp("debug_background_error")
+        raise
+    after_background_screenshot = actions.take_screenshot_with_timestamp("after")
+    verifications.check_region_changed(
+        after_paste2_menu_screenshot,  # Предполагаем, что это скриншот из предыдущего шага (например, после вставки)
+        after_background_screenshot,
+        canvas_region,
+        "Изменения в области canvas успешно зафиксированы: блок вынесен на задний план (контекстное меню).",
+        "Ошибка проверки после выноса на задний план (контекстное меню): "
+    )
+
+    # 15. Вынос на передний план через контекстное меню
+    logger.info("Вынос текстового блока на передний план через контекстное меню...")
+    try:
+        actions.change_z_order("red_textbox",
+                               action="foreground")  # Используем red_textbox, предполагая, что это тот же залитый блок
+    except ValueError as e:
+        logger.error(f"Ошибка при выносе на передний план: {e}")
+        debug_screenshot = actions.take_screenshot_with_timestamp("debug_foreground_error")
+        raise
+    after_foreground_screenshot = actions.take_screenshot_with_timestamp("after")
+    verifications.check_region_changed(
+        after_background_screenshot,
+        after_foreground_screenshot,
+        canvas_region,
+        "Изменения в области canvas успешно зафиксированы: блок вынесен на передний план (контекстное меню).",
+        "Ошибка проверки после выноса на передний план (контекстное меню): "
+    )
+
+    # 16. Удаление через контекстное меню
     logger.info("Удаление текстового блока через контекстное меню...")
-    actions.context_menu_action("test_text123", action="delete")
+    actions.context_menu_action("colored_textbox", action="delete")
     after_delete_menu_screenshot = actions.take_screenshot_with_timestamp("after")
     verifications.check_region_changed(
         after_clear_menu_screenshot,
@@ -223,32 +293,9 @@ def test_object_functions(logger, config, canvas_region, actions, verifications,
         "Изменения в области canvas успешно зафиксированы: текстовый блок удалён (контекстное меню).",
         "Ошибка проверки после удаления (контекстное меню): "
     )
+    logger.info("Тест функций объектов завершён.")
 
-    # # 15. Вынос на передний план через контекстное меню
-    # logger.info("Вынос текстового блока на передний план через контекстное меню...")
-    # actions.create_object("text_button", "canvas_new")  # Создаём новый блок для теста Z-порядка
-    # actions.input_text(test_text)
-    # after_create3_screenshot = actions.take_screenshot_with_timestamp("after")
-    # actions.change_z_order("test_text_123", action="foreground")
-    # after_foreground_screenshot = actions.take_screenshot_with_timestamp("after")
-    # verifications.check_region_changed(
-    #     after_create3_screenshot,
-    #     after_foreground_screenshot,
-    #     canvas_region,
-    #     "Изменения в области canvas успешно зафиксированы: блок вынесен на передний план (контекстное меню).",
-    #     "Ошибка проверки после выноса на передний план (контекстное меню): "
-    # )
-    #
-    # # 16. Вынос на задний план через контекстное меню
-    # logger.info("Вынос текстового блока на задний план через контекстное меню...")
-    # actions.change_z_order("test_text_123", action="background")
-    # after_background_screenshot = actions.take_screenshot_with_timestamp("after")
-    # verifications.check_region_changed(
-    #     after_foreground_screenshot,
-    #     after_background_screenshot,
-    #     canvas_region,
-    #     "Изменения в области canvas успешно зафиксированы: блок вынесен на задний план (контекстное меню).",
-    #     "Ошибка проверки после выноса на задний план (контекстное меню): "
-    # )
-    #
-    # logger.info("Тест функций объектов завершён.")
+    # Закрытие приложения
+    actions.close_fastreport()
+
+    logger.info("Тест Функции объектов(удаление, копирование, вырезание, вставка, редактирование, очищение, вынос на передний план, вынос на задний план) завершен")
