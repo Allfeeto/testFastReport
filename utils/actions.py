@@ -23,9 +23,10 @@ def setup_pyautogui():
 
 def open_fastreport():
     """Открывает приложение FastReport альтернативными способами."""
-    app_path = CONFIG.get("app_path", r"C:\Program Files (x86)\Fast Reports\.NET\2025.2.3\FastReport .NET WinForms Pack Trial\Designer.exe")
+    app_path = CONFIG.get("app_path")
     app_launch_delay = CONFIG.get("delays", {}).get("app_launch", 6)
     after_action_delay = CONFIG.get("delays", {}).get("after_action", 0.5)
+    app_demo_version = CONFIG.get("app_demo_version")
 
     logger.info("Запускаем FastReport...")
 
@@ -49,8 +50,12 @@ def open_fastreport():
 
     time.sleep(app_launch_delay)
 
-    logger.info("Нажимаем кнопку 'OK' в начальном окне...")
-    pyautogui.press('enter')
+    if app_demo_version:
+        logger.info("У Dас выбрана Демо версия FastReport. Нажимаем 'Enter' в окне информации об этом.")
+        pyautogui.press('enter')
+    else:
+        logger.info("У Вас выбрана Полная версия FastReport.")
+
     time.sleep(after_action_delay)
 
 def create_new_report(template_name="null_report"):

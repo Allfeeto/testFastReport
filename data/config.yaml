@@ -1,4 +1,5 @@
 app_path: "C:\\Program Files (x86)\\Fast Reports\\.NET\\2025.2.3\\FastReport .NET WinForms Pack Trial\\Designer.exe"
+app_demo_version: True # Поменяйте значение на True, чтобы запустить демо-версию приложения и наоборот False для полной версии
 delays:
   app_launch: 6  # Задержка после запуска приложения
   after_click: 0  # Задержка после клика
